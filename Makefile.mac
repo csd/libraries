@@ -1,0 +1,73 @@
+#
+# Makefile for HDVIPER Media Service library
+#
+
+# ------------------------------------------------------------------------
+#       C Compiler options 
+# ------------------------------------------------------------------------
+
+VERSION	     = 0.1
+DEFINES      = -D HDVIPER_AUDIO_CAPTURE_MAC
+CFLAGS       = -g
+#CFLAGS       = -O2
+CC 	     = gcc
+AR	     = ar
+ARFLAGS	     = cr
+
+
+# ------------------------------------------------------------------------
+#       Include directives
+# ------------------------------------------------------------------------
+
+SPEEX_INCLUDE   = -I speex/include
+MAC_INCLUDE	    = -I/Developer/Headers/FlatCarbon
+
+
+# ------------------------------------------------------------------------
+#       Libraries directives 
+# ------------------------------------------------------------------------
+
+LIB	     = -L/usr/lib 
+EXTRA_LIBS   = -L/usr/local/lib
+SPEEX_LIB    = -Lspeex/libspeex/.libs -lspeex
+MAC_LIB    = /System/Library/Frameworks/QuickTime.framework/Versions/Current/QuickTime /System/Library/Frameworks/Carbon.framework/Carbon /System/Library/Frameworks/ApplicationServices.framework/ApplicationServices /System/Library/Frameworks/CoreServices.framework/CoreServices /System/Library/Frameworks/AudioUnit.framework/AudioUnit /System/Library/Frameworks/CoreAudio.framework/CoreAudio
+
+
+# ------------------------------------------------------------------------
+#       Don't edit anything beyond this point
+# ------------------------------------------------------------------------
+
+INCLUDES     = -I. ${SPEEX_INCLUDE} ${MAC_INCLUDE}
+CC_SWITCHES  = $(CFLAGS) $(DEFINES) $(INCLUDES)
+LIBRARIES    = $(LIB) $(EXTRA_LIBS) ${SPEEX_LIB} $(MAC_LIB)
+
+OBJECTS      = audio_capture.o audio_codec.o packetize.o video_capture.o \
+		video_codec.o audio_capture_mac.o
+
+RANLIB 	     = ranlib
+SHELL 	     = /bin/sh
+RM 	     = rm -f
+CP	     = cp
+
+all: libspeex hdviper-ms snake
+
+libspeex:	speex/libspeex/.libs/libspeex.a
+
+speex/libspeex/.libs/libspeex.a:
+	cd speex && ./configure && make
+
+hdviper-ms:  $(OBJECTS)
+	@echo "building HDVIPER Media Services lib"
+	$(AR) $(ARFLAGS) hdviper-ms.lib $(OBJECTS)
+	$(RANLIB) hdviper-ms.lib
+	cp hdviper-ms.lib libhdviper-ms.a
+	@echo "make finished on `date`"
+
+snake:  snake.o hdviper-ms
+	$(CC) $(CC_SWITCHES) -o snake snake.o hdviper-ms.lib ${LIBRARIES}
+
+%.o:	%.c
+	$(CC) -c $(CC_SWITCHES) $<
+
+clean:
+	rm -f *.o hdviper-ms.lib snake

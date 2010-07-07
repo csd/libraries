@@ -1,0 +1,131 @@
+#
+# Windows Makefile for HDVIPER Media Service library
+#
+
+# ------------------------------------------------------------------------
+#       C Compiler options 
+# ------------------------------------------------------------------------
+
+VERSION	     = 0.1
+DEFINES      = -D WIN32 -D_X86_=1 -D__WIN32__ -DWIN32_LEAN_AND_MEAN -DEBUG -D WINVER=0x0400 -D HDVIPER_AUDIO_CAPTURE_WIN
+CFLAGS       = -nologo -Zi
+#WLDFLAGS       = -subsystem:windows -entry:WinMainCRTStartup
+WLDFLAGS       = -subsystem:console
+CLDFLAGS       = -subsystem:console
+
+# Set compiler version.
+# For now, it is either 'vc6' or 'vc7', where vc7 is Visual Studio .Net.
+# Or vc8 == Visual Studio 2005
+STUDIO	= vc7
+
+# Set correct path to various tools
+#!IF "$(STUDIO)" == "vc6"
+#CC		 = "c:\program files\microsoft visual studio\vc98\bin\cl.exe"
+#LD	   	 = "c:\program files\microsoft visual studio\vc98\bin\link.exe"
+#AR		= "c:\program files\microsoft visual studio\vc98\bin\lib.exe"
+#!endif
+
+#!IF "$(STUDIO)" == "vc7"
+#CC		 = "$(VCINSTALLDIR)\Vc7\bin\cl.exe"
+#LD		 = "$(VCINSTALLDIR)\Vc7\bin\link.exe"
+#AR		 = "$(VCINSTALLDIR)\Vc7\bin\lib.exe"
+#!endif
+
+#!IF "$(STUDIO)" == "vc8"
+#CC		 = "C:\Program\Microsoft Visual Studio 8\Vc\bin\cl.exe"
+#LD		 = "C:\Program\Microsoft Visual Studio 8\Vc\bin\link.exe"
+#AR		 = "C:\Program\Microsoft Visual Studio 8\Vc\bin\lib.exe"
+#!endif
+
+#!IF "$(STUDIO)" == "vc9"
+#CC		 = "C:\Program\Microsoft Visual Studio 9.0\VC\bin\cl.exe"
+#LD		 = "C:\Program\Microsoft Visual Studio 9.0\VC\bin\link.exe"
+#AR		 = "C:\Program\Microsoft Visual Studio 9.0\VC\bin\lib.exe"
+#!endif
+
+CC		= cl.exe
+LD		= link.exe
+AR		= lib.exe
+
+SOURCEDIR    = .
+DESTDIR	     = .
+OBJDIR	     = .
+
+# ------------------------------------------------------------------------
+#       Include directives
+# ------------------------------------------------------------------------
+
+!if "$(STUDIO)" == "vc6"
+INCLUDE	  = -I"c:\program files\microsoft visual studio\vc98\include" 
+!endif
+
+!if "$(STUDIO)" == "vc7"
+INCLUDE	  = -I"$(VCINSTALLDIR)\Vc7\PlatformSDK\include" -I"$(VCINSTALLDIR)\Vc7\include"
+!endif
+
+!if "$(STUDIO)" == "vc8"
+INCLUDE	  = -I"C:\Program\Microsoft Visual Studio 8\Vc\PlatformSDK\include" -I"C:\Program\Microsoft Visual Studio 8\Vc\include"
+!endif
+
+!if "$(STUDIO)" == "vc9"
+INCLUDE	  = -I"C:\Program\Microsoft Visual Studio 9.0\Vc\PlatformSDK\include" -I"C:\Program\Microsoft Visual Studio 9.0\Vc\include"
+!endif
+
+SPEEX_INCLUDE   = -I speex\include
+
+# ------------------------------------------------------------------------
+#       Libraries directives 
+# ------------------------------------------------------------------------
+
+!if "$(STUDIO)" == "vc6"
+LIB		 = -libpath:"c:\program files\microsoft visual studio\vc98\lib"
+!endif
+
+!if "$(STUDIO)" == "vc7"
+LIB		 = -libpath:"$(VCINSTALLDIR)\Vc7\lib" -libpath:"$(VCINSTALLDIR)\Vc7\PlatformSDK\lib"
+!endif
+
+!if "$(STUDIO)" == "vc8"
+LIB		 = -libpath:"C:\Program\Microsoft Visual Studio 8\Vc\lib" -libpath:"C:\Program\Microsoft Visual Studio 8\Vc\PlatformSDK\lib"
+!endif
+
+!if "$(STUDIO)" == "vc9"
+#LIB		 = -libpath:"C:\Program\Microsoft Visual Studio 9.0\Vc\lib"
+LIB			 = -libpath:"C:\Program\Microsoft SDKs\Windows\v6.0A\Lib" -libpath:"C:\Program\Microsoft Visual Studio 9.0\VC\lib"
+!endif
+
+#EXTRA_LIBS   = kernel32.lib advapi32.lib user32.lib gdi32.lib winmm.lib largeint.lib ws2_32.lib
+EXTRA_LIBS   = advapi32.lib user32.lib gdi32.lib winmm.lib largeint.lib ws2_32.lib libspeex.lib
+
+SPEEX_LIB    = -libpath:"speex\lib" 
+
+# ------------------------------------------------------------------------
+#       Don't edit anything beyond this point
+# ------------------------------------------------------------------------
+
+INCLUDES     = -I. $(INCLUDE) $(SPEEX_INCLUDE)
+CC_SWITCHES  = $(CFLAGS) $(DEFINES) $(INCLUDES) /Zm200
+LIBRARIES    = $(LIB) $(SPEEX_LIB) libspeex.lib $(EXTRA_LIBS) 
+WLD_SWITCHES	 = $(WLDFLAGS)
+CLD_SWITCHES	 = $(CLDFLAGS)
+
+RM 	     = erase
+
+OBJECTS      = audio_capture.obj audio_codec.obj packetize.obj video_capture.obj \
+		video_codec.obj audio_capture_win.obj
+
+all: hdviper-ms snake
+
+hdviper-ms:  $(OBJECTS)
+	@echo "building HDVIPER Media Services lib for Windows"
+	$(AR) /out:hdviper-ms.lib $(OBJECTS)
+	@echo "make finished"
+
+snake:  snake.obj hdviper-ms
+	$(LD) $(CLD_SWITCHES) -out:snake.exe snake.obj $(LIBRARIES) hdviper-ms.lib
+
+clean:
+	$(RM) $(OBJECTS) hdviper-ms.lib snake.exe snake.obj
+
+{$(SOURCEDIR)}.c.obj:
+	$(CC) -c $(CC_SWITCHES) -Fo$(OBJDIR)\ $<

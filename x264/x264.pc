@@ -1,0 +1,10 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: tidh264
+Description: H.264 encoder
+Version: 0.54.0
+Libs: -L${exec_prefix}/lib -ltidh264 -lpthread
+Cflags: -I${prefix}/include

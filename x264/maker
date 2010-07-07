@@ -1,0 +1,46 @@
+action=$1
+target=$2
+shift
+TID_INSTALL_DIR=/usr/local
+
+
+# ##############################################################################
+#
+# sourcing top level .maker (containing function fail and more stuff)
+#
+#. $SVN_ROOT/.maker
+
+
+
+case $action in
+  "config")
+    echo '----------------------' config $YO
+    ./configure --prefix=$TID_INSTALL_DIR --enable-pic 
+    exit 0
+    ;;
+
+  "clean")
+    echo '----------------------' clean $YO
+    make clean
+    ;;
+
+  "make")
+    echo '----------------------' make $YO
+    make
+    ;;
+
+  "install")
+    echo '----------------------' install $YO
+    make install
+    ;;
+
+  "")
+    #fail "empty action ..."
+    ;;
+
+  *)
+    #fail $action
+    ;;
+esac
+
+exit 0
