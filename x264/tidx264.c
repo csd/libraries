@@ -42,6 +42,7 @@ enum
 #define ARG_KEYINT_MAX_DEFAULT 0
 #define ARG_CABAC_DEFAULT 1
 
+
 static inline int x264_clip3( int v, int i_min, int i_max )
 {
     return ( (v < i_min) ? i_min : (v > i_max) ? i_max : v );
@@ -96,10 +97,12 @@ tidx264_enc_init (TIDX264Enc * encoder)
  *
  */
 int
-tidx264_enc_init_encoder (TIDX264Enc * encoder)
+tidx264_enc_init_encoder (TIDX264Enc * encoder, int profile)
 {
 
   tidx264_enc_init (encoder);
+  encoder->cabac = profile;
+  fprintf(stderr, "TTA: Set the profile to %d\n", profile);
   
   /* set up encoder parameters */
   ((x264_param_t *)encoder->h264param)->i_threads = encoder->threads;

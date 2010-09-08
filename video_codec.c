@@ -28,7 +28,8 @@ int hdviper_setup_video_encoder(VideoCodec *c, int type, Video *v) {
 
     if ( type == VIDEO_CODEC_H264 )
     {
-	resul = tidx264_enc_init_encoder ((TIDX264Enc *)c->object);
+    	fprintf(stderr,"v->profile = %d\n", v->profile);
+	resul = tidx264_enc_init_encoder ((TIDX264Enc *)c->object, v->profile);
     }
     return resul;
 }

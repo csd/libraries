@@ -92,7 +92,7 @@ struct _TIDX264Enc
 
 void tidx264_enc_init_frame (tidx264_picture_t * pic_in, char * buf, int width, int height);
 
-int tidx264_enc_init_encoder (TIDX264Enc *encoder);
+int tidx264_enc_init_encoder (TIDX264Enc *encoder, int profile);
 int tidx264_enc_encode_frame (TIDX264Enc *encoder, tidx264_picture_t *pic_in, char *buffer, int *buffersize);
 void tidx264_enc_close_encoder (TIDX264Enc *encoder);
 

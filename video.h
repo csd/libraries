@@ -46,6 +46,7 @@ typedef struct {
   unsigned short rtp_seq; /* RTP sequence number */
   unsigned int ssrc; /* SSRC identifier for the audio RTP stream */
   int rtp_pt; /* RTP payload type identifier for this video stream */
+  int profile;
 } Video;
 
 #define VIDEO_DGM_LEN 1400
