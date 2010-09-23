@@ -102,7 +102,6 @@ tidx264_enc_init_encoder (TIDX264Enc * encoder, int profile)
 
   tidx264_enc_init (encoder);
   encoder->cabac = profile;
-  fprintf(stderr, "TTA: Set the profile to %d\n", profile);
   
   /* set up encoder parameters */
   ((x264_param_t *)encoder->h264param)->i_threads = encoder->threads;
